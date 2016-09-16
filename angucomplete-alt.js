@@ -673,18 +673,24 @@
       };
 
       scope.inputChangeHandler = function(str) {
-        if (str.length < minlength) {
-          cancelHttpRequest();
-          clearResults();
-        }
-        else if (str.length === 0 && minlength === 0) {
-          showAll();
-        }
+         if (str) {
+             if (str.length < minlength) {
+                 cancelHttpRequest();
+                 clearResults();
+             }
+             else if (str.length === 0 && minlength === 0) {
+                 showAll();
+             }
 
-        if (scope.inputChanged) {
-          str = scope.inputChanged(str);
-        }
-        return str;
+             if (scope.inputChanged) {
+                 str = scope.inputChanged(str);
+             }
+             return str;
+         }
+         else {
+             cancelHttpRequest();
+             clearResults();
+         }
       };
 
       // check min length
