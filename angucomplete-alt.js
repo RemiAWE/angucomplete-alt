@@ -46,7 +46,7 @@
     // Set the default template for this directive
     $templateCache.put(TEMPLATE_URL,
         '<div class="angucomplete-holder" ng-class="{\'angucomplete-dropdown-visible\': showDropdown}">' +
-        '  <input id="{{id}}_value" name="{{inputName}}" tabindex="{{fieldTabindex}}" ng-class="{\'angucomplete-input-not-empty\': notEmpty}" ng-model="searchStr" ng-disabled="disableInput" type="{{inputType}}" placeholder="{{placeholder}}" maxlength="{{maxlength}}" ng-focus="onFocusHandler()" class="{{inputClass}}" ng-focus="resetHideResults()" ng-blur="hideResults($event)" autocapitalize="off" autocorrect="off" autocomplete="off" ng-change="inputChangeHandler(searchStr)"/>' +
+        '  <input id="{{id}}_value" name="{{inputName}}" tabindex="{{fieldTabindex}}" ng-class="{\'angucomplete-input-not-empty\': notEmpty}" ng-model="searchStr" ng-disabled="disableInput" type="{{inputType}}" placeholder="{{placeholder}}" maxlength="{{maxlength}}" ng-focus="onFocusHandler()" class="{{inputClass}}" ng-focus="resetHideResults()" ng-blur="hideResults($event)" autocapitalize="off" autocorrect="off" autocomplete="off" ng-change="inputChangeHandler(searchStr)" ng-required="fieldRequired"/>' +
         '  <div id="{{id}}_dropdown" class="angucomplete-dropdown" ng-show="showDropdown">' +
         '    <div class="angucomplete-searching" ng-show="searching" ng-bind="textSearching"></div>' +
         '    <div class="angucomplete-searching" ng-show="!searching && (!results || results.length == 0)" ng-bind="textNoResults"></div>' +
@@ -104,25 +104,10 @@
         }
       });
 
-      scope.$watch('fieldRequired', function(newval, oldval) {
-        if (newval !== oldval) {
-          if (!newval) {
-            ctrl[scope.inputName].$setValidity(requiredClassName, true);
-          }
-          else if (!validState || scope.currentIndex === -1) {
-            handleRequired(false);
-          }
-          else {
-            handleRequired(true);
-          }
-        }
-      });
-
       scope.$on('angucomplete-alt:clearInput', function (event, elementId) {
         if (!elementId || elementId === scope.id) {
           scope.searchStr = null;
           callOrAssign();
-          handleRequired(false);
           clearResults();
         }
       });
@@ -145,8 +130,6 @@
               console.error('Tried to set ' + (!!initial ? 'initial' : '') + ' value of angucomplete to', newval, 'which is an invalid value');
             }
           }
-
-          handleRequired(true);
         }
       }
 
@@ -168,13 +151,6 @@
         }
         else {
           scope.selectedObject = value;
-        }
-
-        if (value) {
-          handleRequired(true);
-        }
-        else {
-          handleRequired(false);
         }
       }
 
@@ -233,14 +209,6 @@
           result = target;
         }
         return $sce.trustAsHtml(result);
-      }
-
-      function handleRequired(valid) {
-        scope.notEmpty = valid;
-        validState = scope.searchStr;
-        if (scope.fieldRequired && ctrl && scope.inputName) {
-          ctrl[scope.inputName].$setValidity(requiredClassName, valid);
-        }
       }
 
       function keyupHandler(event) {
@@ -719,11 +687,6 @@
         return str;
       };
 
-      // check required
-      if (scope.fieldRequiredClass && scope.fieldRequiredClass !== '') {
-        requiredClassName = scope.fieldRequiredClass;
-      }
-
       // check min length
       if (scope.minlength && scope.minlength !== '') {
         minlength = parseInt(scope.minlength, 10);
@@ -742,17 +705,6 @@
       // check override suggestions
       if (!scope.overrideSuggestions) {
         scope.overrideSuggestions = false;
-      }
-
-      // check required field
-      if (scope.fieldRequired && ctrl) {
-        // check initial value, if given, set validitity to true
-        if (scope.initialValue) {
-          handleRequired(true);
-        }
-        else {
-          handleRequired(false);
-        }
       }
 
       scope.inputType = attrs.type ? attrs.type : 'text';
@@ -813,7 +765,6 @@
         clearSelected: '@',
         overrideSuggestions: '@',
         fieldRequired: '=',
-        fieldRequiredClass: '@',
         inputChanged: '=',
         autoMatch: '@',
         focusOut: '&',
