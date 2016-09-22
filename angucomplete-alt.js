@@ -79,6 +79,13 @@
       var displaySearching;
       var displayNoResults;
 
+      /**
+       * Auto-motherfucking-focus
+       */
+      if (scope.autofocus === true) {
+          elem.find('input')[0].focus();
+      }
+
       elem.on('mousedown', function(event) {
         if (event.target.id) {
           mousedownOn = event.target.id;
@@ -773,7 +780,8 @@
         fieldTabindex: '@',
         inputName: '@',
         focusFirst: '@',
-        parseInput: '&'
+        parseInput: '&',
+        autofocus: '='
       },
       templateUrl: function(element, attrs) {
         return attrs.templateUrl || TEMPLATE_URL;
